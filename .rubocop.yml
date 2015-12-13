@@ -1,0 +1,6 @@
+Style/Documentation:
+  Exclude:
+    - 'spec/**/*'
+    - 'test/**/*'
+    - 'lib/fourflusher.rb'
+    - 'lib/fourflusher/version.rb'
