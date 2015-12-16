@@ -15,5 +15,11 @@ describe Fourflusher::SimControl do
       expect(sims.last.os_name).to eq 'watchOS'
       expect(os_names).to eq %w(iOS tvOS watchOS)
     end
+
+    it 'can find a specific simulator' do
+      sim = simctl.simulator('iPhone 6s')
+
+      expect(sim.name).to eq 'iPhone 6s'
+    end
   end
 end

@@ -55,7 +55,11 @@ module Fourflusher
       @os_regex = /^-- (?<os_name>.*?) (?<os_version>[0-9].[0-9]) --$/
     end
 
-    def usable_simulators(_filter = nil)
+    def simulator(filter)
+      usable_simulators(filter).first
+    end
+
+    def usable_simulators(filter = nil)
       os_name = ''
       os_version = ''
       sims = []
@@ -68,7 +72,8 @@ module Fourflusher
         sims += Simulator.match(line, os_name, os_version)
       end
 
-      sims
+      return sims if filter.nil?
+      sims.select { |sim| sim.name == filter }
     end
   end
 end
