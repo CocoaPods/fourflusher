@@ -9,6 +9,9 @@ module Fourflusher
     end
   end
 
+  class Informative < StandardError
+  end
+
   class UI
     def self.indentation_level
       0
