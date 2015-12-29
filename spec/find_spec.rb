@@ -21,5 +21,17 @@ describe Fourflusher::SimControl do
 
       expect(sim.name).to eq 'iPhone 6s'
     end
+
+    it 'can find a specific simulator for a minimum iOS version' do
+      sim = simctl.simulator('iPhone 6s', '8.1')
+
+      expect(sim.name).to eq 'iPhone 6s'
+    end
+
+    it 'will fail if the minimum iOS version cannot be satisfied' do
+      sim = simctl.simulator('iPhone 6s', '10.0')
+
+      expect(sim).to eq nil
+    end
   end
 end

@@ -1,4 +1,5 @@
 require 'fourflusher/simctl'
+require 'rubygems/version'
 
 module Fourflusher
   # Metadata about an installed Xcode simulator
@@ -10,8 +11,12 @@ module Fourflusher
 
     def self.match(line, os_name, os_version)
       sims = []
-      @@sim_regex.match(line) { |m| sims << Simulator.new(m, os_name, os_version) }
+      @@sim_regex.match(line) { |m| sims << Simulator.new(m, os_name, Gem::Version.new(os_version)) }
       sims
+    end
+
+    def compatible?(other_version)
+      other_version <= os_version
     end
 
     def to_s
@@ -55,11 +60,11 @@ module Fourflusher
       @os_regex = /^-- (?<os_name>.*?) (?<os_version>[0-9].[0-9]) --$/
     end
 
-    def simulator(filter)
-      usable_simulators(filter).first
+    def simulator(filter, minimum_version = '1.0')
+      usable_simulators(filter, minimum_version).first
     end
 
-    def usable_simulators(filter = nil)
+    def usable_simulators(filter = nil, minimum_version = '1.0')
       os_name = ''
       os_version = ''
       sims = []
@@ -73,7 +78,8 @@ module Fourflusher
       end
 
       return sims if filter.nil?
-      sims.select { |sim| sim.name == filter }
+      minimum_version = Gem::Version.new(minimum_version)
+      sims.select { |sim| sim.name == filter && sim.compatible?(minimum_version) }
     end
   end
 end

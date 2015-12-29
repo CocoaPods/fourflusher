@@ -38,7 +38,7 @@ EOF
         sim.id.should == 'C0404A23-2D2D-4208-8CEC-774194D06759'
         sim.name.should == 'iPhone 4s'
         sim.os_name.should == 'iOS'
-        sim.os_version.should == '9.2'
+        sim.os_version.should == Gem::Version.new('9.2')
       end
 
       it 'can construct the destination argument for a specific simulator' do
@@ -58,7 +58,7 @@ EOF
         sim.id.should == 'C0404A23-2D2D-4208-8CEC-774194D06759'
         sim.name.should == 'iPhone 4s'
         sim.os_name.should == 'iOS'
-        sim.os_version.should == '8.0'
+        sim.os_version.should == Gem::Version.new('8.0')
       end
 
       it 'returns an empty list on invalid input' do
