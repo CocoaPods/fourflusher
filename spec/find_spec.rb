@@ -9,7 +9,7 @@ describe Fourflusher::SimControl do
       os_names = sims.map(&:os_name).uniq.sort
 
       # This check is silly, but I am too lazy to come up with sth better
-      expect(sims.count).to eq (ENV['TRAVIS'] == 'true') ? 73 : 15
+      expect(sims.count).to eq ENV['TRAVIS'] == 'true' ? 73 : 15
       expect(sims.first.name).to eq 'iPhone 4s'
       expect(sims.first.os_name).to eq 'iOS'
       expect(sims.last.name).to eq 'Apple Watch - 42mm'
