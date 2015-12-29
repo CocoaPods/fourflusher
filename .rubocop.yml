@@ -5,7 +5,7 @@ Metrics/CyclomaticComplexity:
   Max: 10
 
 Metrics/LineLength:
-  Max: 100
+  Max: 105
 
 Metrics/MethodLength:
   Max: 30
@@ -24,3 +24,7 @@ Style/Documentation:
     - 'test/**/*'
     - 'lib/fourflusher/version.rb'
     - 'lib/fourflusher/compat.rb'
+
+Lint/Void:
+  Exclude:
+    - 'spec/unit_spec.rb'
