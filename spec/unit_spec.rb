@@ -46,6 +46,16 @@ EOF
 
         destination.should == ['-destination', 'id=C0404A23-2D2D-4208-8CEC-774194D06759']
       end
+
+      it 'can optionally specify a constraint on destinations' do
+        destination = @ctrl.destination('iPhone 4s', '8.0')
+
+        destination.should == ['-destination', 'id=C0404A23-2D2D-4208-8CEC-774194D06759']
+      end
+
+      it 'throws if a destination cannot satisfy the OS constraint' do
+        expect { @ctrl.destination('iPhone 4s', '10.0') }.to raise_error(RuntimeError)
+      end
     end
   end
 
