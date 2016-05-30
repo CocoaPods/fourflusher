@@ -59,7 +59,8 @@ EOF
 
       it 'throws if Xcode is not installed' do
         ENV['DEVELOPER_DIR'] = '/yolo'
-        expect { SimControl.new.destination('iPhone 4s', '9.0') }.to raise_error(Fourflusher::Informative)
+        expect { SimControl.new.destination('iPhone 4s', '9.0') }.to \
+          raise_error(Fourflusher::Informative)
       end
     end
   end
