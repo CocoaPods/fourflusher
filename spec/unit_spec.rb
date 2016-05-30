@@ -56,6 +56,11 @@ EOF
       it 'throws if a destination cannot satisfy the OS constraint' do
         expect { @ctrl.destination('iPhone 4s', '10.0') }.to raise_error(RuntimeError)
       end
+
+      it 'throws if Xcode is not installed' do
+        ENV['DEVELOPER_DIR'] = '/yolo'
+        expect { SimControl.new.destination('iPhone 4s', '9.0') }.to raise_error(Fourflusher::Informative)
+      end
     end
   end
 

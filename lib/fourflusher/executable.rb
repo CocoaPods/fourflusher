@@ -78,7 +78,7 @@ module Fourflusher
     #
     def self.execute_command(executable, command, raise_on_failure = true)
       bin = which(executable)
-      fail Informative, "Unable to locate the executable `#{executable}`" unless bin
+      fail Fourflusher::Informative, "Unable to locate the executable `#{executable}`" unless bin
 
       command = command.map(&:to_s)
       full_command = "#{bin} #{command.join(' ')}"
@@ -98,7 +98,7 @@ module Fourflusher
       output = stdout + stderr
       unless status.success?
         if raise_on_failure
-          fail Informative, "#{full_command}\n\n#{output}"
+          fail Fourflusher::Informative, "#{full_command}\n\n#{output}"
         else
           UI.message("[!] Failed: #{full_command}".red)
         end
@@ -144,7 +144,7 @@ module Fourflusher
     #
     def self.capture_command(executable, command, capture: :merge)
       bin = which(executable)
-      fail Informative, "Unable to locate the executable `#{executable}`" unless bin
+      fail Fourflusher::Informative, "Unable to locate the executable `#{executable}`" unless bin
 
       require 'open3'
       command = command.map(&:to_s)
