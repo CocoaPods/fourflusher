@@ -57,7 +57,7 @@ module Fourflusher
   # Executes `simctl` commands
   class SimControl
     def initialize
-      @os_regex = /^-- (?<os_name>.*?) (?<os_version>[0-9].[0-9]) --$/
+      @os_regex = /^-- (?<os_name>.*?) (?<os_version>[0-9][0-9]?\.[0-9]) --$/
     end
 
     def simulator(filter, minimum_version = '1.0')
