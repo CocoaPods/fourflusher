@@ -6,7 +6,7 @@ module Fourflusher
       def sim_control(path)
         ctrl = SimControl.new
         ctrl.stub(:list).and_return(File.new("spec/fixtures/#{path}").read)
-        return ctrl
+        ctrl
       end
 
       it 'can find the 5 simulator' do
