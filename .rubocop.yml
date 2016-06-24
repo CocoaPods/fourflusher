@@ -1,5 +1,5 @@
 Metrics/AbcSize:
-  Max: 25
+  Max: 35
 
 Metrics/CyclomaticComplexity:
   Max: 10

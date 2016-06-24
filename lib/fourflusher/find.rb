@@ -6,13 +6,16 @@ module Fourflusher
   class Simulator
     attr_reader :id
     attr_reader :name
-    attr_reader :os_name
     attr_reader :os_version
 
     def self.match(line, os_name, os_version)
       sims = []
       @@sim_regex.match(line) { |m| sims << Simulator.new(m, os_name, Gem::Version.new(os_version)) }
       sims
+    end
+
+    def os_name
+      @os_name.downcase.to_sym
     end
 
     def compatible?(other_version)
@@ -60,11 +63,11 @@ module Fourflusher
       @os_regex = /^-- (?<os_name>.*?) (?<os_version>[0-9][0-9]?\.[0-9]) --$/
     end
 
-    def simulator(filter, minimum_version = '1.0')
-      usable_simulators(filter, minimum_version).first
+    def simulator(filter, os_name = :ios, minimum_version = '1.0')
+      usable_simulators(filter, os_name, minimum_version).first
     end
 
-    def usable_simulators(filter = nil, minimum_version = '1.0')
+    def usable_simulators(filter = nil, os = :ios, minimum_version = '1.0')
       os_name = ''
       os_version = ''
       sims = []
@@ -77,9 +80,19 @@ module Fourflusher
         sims += Simulator.match(line, os_name, os_version)
       end
 
+      oses = sims.map(&:os_name).uniq
+      os = os.downcase.to_sym
+      fail "Invalid OS `#{os}`, valid values are #{oses.join(', ')}" unless oses.include?(os)
+
       return sims if filter.nil?
       minimum_version = Gem::Version.new(minimum_version)
-      sims.select { |sim| sim.name == filter && sim.compatible?(minimum_version) }
+      sims = sims.select { |sim| sim.os_name == os && sim.compatible?(minimum_version) }
+
+      return [sims.first] if filter == :oldest
+
+      found_sims = sims.select { |sim| sim.name == filter }
+      return found_sims if found_sims.count > 0
+      sims.select { |sim| sim.name.start_with?(filter) }
     end
   end
 end

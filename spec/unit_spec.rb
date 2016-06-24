@@ -37,7 +37,7 @@ EOF
 
         sim.id.should == 'C0404A23-2D2D-4208-8CEC-774194D06759'
         sim.name.should == 'iPhone 4s'
-        sim.os_name.should == 'iOS'
+        sim.os_name.should == :ios
         sim.os_version.should == Gem::Version.new('9.2')
       end
 
@@ -48,13 +48,13 @@ EOF
       end
 
       it 'can optionally specify a constraint on destinations' do
-        destination = @ctrl.destination('iPhone 4s', '8.0')
+        destination = @ctrl.destination('iPhone 4s', :ios, '8.0')
 
         destination.should == ['-destination', 'id=C0404A23-2D2D-4208-8CEC-774194D06759']
       end
 
       it 'throws if a destination cannot satisfy the OS constraint' do
-        expect { @ctrl.destination('iPhone 4s', '10.0') }.to raise_error(RuntimeError)
+        expect { @ctrl.destination('iPhone 4s', :ios, '10.0') }.to raise_error(RuntimeError)
       end
 
       it 'throws if Xcode is not installed' do
@@ -73,7 +73,7 @@ EOF
 
         sim.id.should == 'C0404A23-2D2D-4208-8CEC-774194D06759'
         sim.name.should == 'iPhone 4s'
-        sim.os_name.should == 'iOS'
+        sim.os_name.should == :ios
         sim.os_version.should == Gem::Version.new('8.0')
       end
 

@@ -2,10 +2,6 @@
 
 A library for interacting with Xcode simulators.
 
-## Usage
-
-TODO: Write usage instructions here
-
 ## Installation
 
 Add this line to your application's Gemfile:
