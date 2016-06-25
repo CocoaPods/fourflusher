@@ -57,6 +57,11 @@ EOF
         expect { @ctrl.destination('iPhone 4s', :ios, '10.0') }.to raise_error(RuntimeError)
       end
 
+      it 'still throws a helpful error if `:oldest` is used' do
+        expect { @ctrl.destination(:oldest, 'iOS', '20.0') }.to \
+          raise_error(RuntimeError, 'Simulator for iOS 20.0 is not available.')
+      end
+
       it 'throws if Xcode is not installed' do
         ENV['DEVELOPER_DIR'] = '/yolo'
         expect { SimControl.new.destination('iPhone 4s', '9.0') }.to \
