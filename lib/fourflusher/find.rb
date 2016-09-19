@@ -84,9 +84,8 @@ module Fourflusher
       os = os.downcase.to_sym
 
       unless oses.include?(os)
-        fail "Invalid OS `#{os}`, valid values are #{oses.join(', ')}. Open Xcode "\
-          "and go to Window -> Devices to make sure you have at least one `#{os}` simulator set up. "\
-          "You can create a new simulator by pressing '+' in the bottom left corner of that window."
+        fail "Could not find a `#{os}` simulator (valid values: #{oses.join(', ')}). Ensure that "\
+          "Xcode -> Window -> Devices has at least one `#{os}` simulator listed or otherwise add one."
       end
 
       return sims if filter.nil?
