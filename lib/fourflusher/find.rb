@@ -82,7 +82,11 @@ module Fourflusher
 
       oses = sims.map(&:os_name).uniq
       os = os.downcase.to_sym
-      fail "Invalid OS `#{os}`, valid values are #{oses.join(', ')}" unless oses.include?(os)
+
+      unless oses.include?(os)
+        fail "Could not find a `#{os}` simulator (valid values: #{oses.join(', ')}). Ensure that "\
+          "Xcode -> Window -> Devices has at least one `#{os}` simulator listed or otherwise add one."
+      end
 
       return sims if filter.nil?
       minimum_version = Gem::Version.new(minimum_version)
