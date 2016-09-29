@@ -10,7 +10,7 @@ module Fourflusher
       end
 
       it 'can find the 5 simulator' do
-        ctrl = sim_control('xcode-8.txt')
+        ctrl = sim_control('simctl.json')
         destination = ctrl.destination('iPhone 5')
         destination.first.should == '-destination'
       end

@@ -1,4 +1,5 @@
 require 'fourflusher/simctl'
+require 'json'
 require 'rubygems/version'
 
 module Fourflusher
@@ -7,12 +8,6 @@ module Fourflusher
     attr_reader :id
     attr_reader :name
     attr_reader :os_version
-
-    def self.match(line, os_name, os_version)
-      sims = []
-      @@sim_regex.match(line) { |m| sims << Simulator.new(m, os_name, Gem::Version.new(os_version)) }
-      sims
-    end
 
     def os_name
       @os_name.downcase.to_sym
@@ -26,60 +21,80 @@ module Fourflusher
       "#{@name} (#{@id}) - #{@os_name} #{@os_version}"
     end
 
+    # Compare function for sorting simulators in order by
+    # - OS Name: ascending
+    # - OS Version: descending
+    # - Device type: iPhone first, then ascending
+    # - Model: ascending
+    def sim_list_compare(other)
+      return os_name.to_s <=> other.os_name.to_s unless os_name == other.os_name
+      return other.os_version <=> os_version unless os_version == other.os_version
+      device1, model1 = device_and_model
+      device2, model2 = other.device_and_model
+      unless device1 == device2
+        return -1 if device1 == 'iPhone'
+        return 1 if device2 == 'iPhone'
+        return device1 <=> device2
+      end
+      model1 <=> model2
+    end
+
+    # Returns the [device, model] for use during sorting
+    # Examples: [iPhone, 5s], [iPhone, 6s Plus], [Apple Watch Series 2, 38mm]
+    def device_and_model
+      if os_name == :watchos
+        # Sample string: Apple Watch Series 2 - 38mm
+        name.split ' - '
+      else
+        # Sample string: "iPhone 5s" or "iPhone 6 Plus" or "iPad Air 2"
+        if name.start_with? 'Apple TV'
+          # The last part is the model, and the rest is the device
+          parts = name.rpartition(' ').reject { |str| str.strip.empty? }
+          [parts[0...-1].join(' '), parts.drop(parts.count - 1).join(' ')].map(&:strip)
+        else
+          # The first part is device, and the rest is the model
+          name.split ' ', 2
+        end
+      end
+    end
+
     private
 
-    @@sim_regex = /^\s*(?<sim_name>[^\)]*?) \((?<sim_id>[^\)]*?)\) \((?<sim_state>[^\)]*?)\)$/
-
-    def initialize(match_data, os_name, os_version)
-      @id = match_data['sim_id']
-      @name = match_data['sim_name']
+    def initialize(device_json, os_name, os_version)
+      @id = device_json['udid']
+      @name = device_json['name']
       @os_name = os_name
-      @os_version = os_version
+      @os_version = Gem::Version.new os_version
     end
   end
 
-  # -- iOS 9.2 --
-  #     iPhone 4s (C0404A23-2D2D-4208-8CEC-774194D06759) (Shutdown)
-  #     iPhone 5 (7A0F62DD-8330-44F0-9828-AC8B1BC9BF05) (Shutdown)
-  #     iPhone 5s (51C1CB50-FBCB-47ED-B8FF-68C816BF0932) (Shutdown)
-  #     iPhone 6 (6F4E143A-6914-476E-90BF-51B680B8E2EF) (Shutdown)
-  #     iPhone 6 Plus (BEB9BFE9-AF1A-4FEA-9FA5-CAFD5243CA42) (Shutdown)
-  #     iPhone 6s (98DB904B-DF98-4F3C-AB21-A4D133604BA4) (Shutdown)
-  #     iPhone 6s Plus (65838307-4C03-4DD3-84E4-A6477CFD3490) (Shutdown)
-  #     iPad 2 (349C1313-6C9C-48C6-8849-DAB18BE2F15C) (Shutdown)
-  #     iPad Retina (30909168-4C90-48CD-B142-86DCF7B1372A) (Shutdown)
-  #     iPad Air (A8B5F651-C215-459C-95C6-663194F2277B) (Shutdown)
-  #     iPad Air 2 (BFDB363E-D514-490C-A1D6-AC86402089BA) (Shutdown)
-  #     iPad Pro (AE5DA548-66F6-4FCE-AA6D-5E6E17CD721E) (Shutdown)
-  # -- tvOS 9.1 --
-  #     Apple TV 1080p (C5A44868-685C-4D72-BEBD-102246C870F7) (Shutdown)
-  # -- watchOS 2.1 --
-  #     Apple Watch - 38mm (FE557B65-A044-44C3-96AC-2EAC395A6090) (Shutdown)
-  #     Apple Watch - 42mm (C9138FAE-6812-4BB5-A463-76520C116AF4) (Shutdown)
+  # {
+  #   "devices" : {
+  #     "iOS 10.0" : [
+  #       {
+  #         "state" : "Shutdown",
+  #         "availability" : "(available)",
+  #         "name" : "iPhone 5",
+  #         "udid" : "B7D21008-CC16-47D6-A9A9-885FE1FC47A8"
+  #       },
+  #       {
+  #         "state" : "Shutdown",
+  #         "availability" : "(available)",
+  #         "name" : "iPhone 5s",
+  #         "udid" : "38EAE7BD-90C3-4C3D-A672-3AF683EEC5A2"
+  #       },
+  #     ]
+  #   }
+  # }
 
   # Executes `simctl` commands
   class SimControl
-    def initialize
-      @os_regex = /^-- (?<os_name>.*?) (?<os_version>[0-9][0-9]?\.[0-9]) --$/
-    end
-
     def simulator(filter, os_name = :ios, minimum_version = '1.0')
       usable_simulators(filter, os_name, minimum_version).first
     end
 
     def usable_simulators(filter = nil, os = :ios, minimum_version = '1.0')
-      os_name = ''
-      os_version = ''
-      sims = []
-
-      list(['devices']).lines.each do |line|
-        @os_regex.match(line) do |m|
-          os_name = m['os_name']
-          os_version = m['os_version']
-        end
-        sims += Simulator.match(line, os_name, os_version)
-      end
-
+      sims = fetch_sims
       oses = sims.map(&:os_name).uniq
       os = os.downcase.to_sym
 
@@ -92,11 +107,29 @@ module Fourflusher
       minimum_version = Gem::Version.new(minimum_version)
       sims = sims.select { |sim| sim.os_name == os && sim.compatible?(minimum_version) }
 
-      return [sims.first] if filter == :oldest
+      return [sims.min_by(&:os_version)] if filter == :oldest
 
       found_sims = sims.select { |sim| sim.name == filter }
       return found_sims if found_sims.count > 0
       sims.select { |sim| sim.name.start_with?(filter) }
+    end
+
+    private
+
+    # Gets the simulators and transforms the simctl json into Simulator objects
+    def fetch_sims
+      device_list = JSON.parse(list(['-j', 'devices']))['devices']
+      unless device_list.is_a?(Hash)
+        msg = "Expected devices to be of type Hash but instated found #{device_list.class}"
+        fail Fourflusher::Informative, msg
+      end
+      device_list.flat_map do |runtime_str, devices|
+        # Sample string: iOS 9.3
+        os_name, os_version = runtime_str.split ' '
+        devices.map do |device|
+          Simulator.new(device, os_name, os_version) if device['availability'] == '(available)'
+        end
+      end.compact.sort(&:sim_list_compare)
     end
   end
 end
