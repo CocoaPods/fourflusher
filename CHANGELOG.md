@@ -1,6 +1,16 @@
 
 ## Master
 
+##### Enhancements
+
+* None
+
+##### Bug Fixes
+
+* None
+
+## v2.0.0 (2016-10-02)
+
 ##### Breaking
 
 * Use JSON output from `xcrun simctl list`. Drop support for Xcode 6 (doesn't support JSON output)  
@@ -18,6 +28,8 @@
   [#4](https://github.com/CocoaPods/fourflusher/pull/4)
 
 ##### Bug Fixes
+
+* None
 
 ## v1.0.1 (2016-06-25)
 
