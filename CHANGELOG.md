@@ -10,16 +10,6 @@
 * None.  
 
 
-## 2.0.0 (2016-10-02)
-
-##### Enhancements
-
-* None
-
-##### Bug Fixes
-
-* None
-
 ## v2.0.0 (2016-10-02)
 
 ##### Breaking
