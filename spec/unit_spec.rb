@@ -1,60 +1,39 @@
 module Fourflusher
-  SIMCTL_OUTPUT = <<-EOF
--- iOS 9.2 --
-    iPhone 4s (C0404A23-2D2D-4208-8CEC-774194D06759) (Shutdown)
-    iPhone 5 (7A0F62DD-8330-44F0-9828-AC8B1BC9BF05) (Shutdown)
-    iPhone 5s (51C1CB50-FBCB-47ED-B8FF-68C816BF0932) (Shutdown)
-    iPhone 6 (6F4E143A-6914-476E-90BF-51B680B8E2EF) (Shutdown)
-    iPhone 6 Plus (BEB9BFE9-AF1A-4FEA-9FA5-CAFD5243CA42) (Shutdown)
-    iPhone 6s (98DB904B-DF98-4F3C-AB21-A4D133604BA4) (Shutdown)
-    iPhone 6s Plus (65838307-4C03-4DD3-84E4-A6477CFD3490) (Shutdown)
-    iPad 2 (349C1313-6C9C-48C6-8849-DAB18BE2F15C) (Shutdown)
-    iPad Retina (30909168-4C90-48CD-B142-86DCF7B1372A) (Shutdown)
-    iPad Air (A8B5F651-C215-459C-95C6-663194F2277B) (Shutdown)
-    iPad Air 2 (BFDB363E-D514-490C-A1D6-AC86402089BA) (Shutdown)
-    iPad Pro (AE5DA548-66F6-4FCE-AA6D-5E6E17CD721E) (Shutdown)
--- tvOS 9.1 --
-    Apple TV 1080p (C5A44868-685C-4D72-BEBD-102246C870F7) (Shutdown)
--- watchOS 2.1 --
-    Apple Watch - 38mm (FE557B65-A044-44C3-96AC-2EAC395A6090) (Shutdown)
-    Apple Watch - 42mm (C9138FAE-6812-4BB5-A463-76520C116AF4) (Shutdown)
-EOF
-
   describe SimControl do
     describe 'In general' do
       before do
         @ctrl = SimControl.new
-        @ctrl.stub(:list).and_return(SIMCTL_OUTPUT)
+        @ctrl.stub(:list).and_return(File.new('spec/fixtures/simctl.json').read)
       end
 
       it 'can find all usable simulators' do
         sims = @ctrl.usable_simulators
-        sims.count.should == 15
+        sims.count.should == 107
       end
 
       it 'can find a specific simulator' do
-        sim = @ctrl.simulator('iPhone 4s')
+        sim = @ctrl.simulator('iPhone 5')
 
-        sim.id.should == 'C0404A23-2D2D-4208-8CEC-774194D06759'
-        sim.name.should == 'iPhone 4s'
+        sim.id.should == '872DB32B-E22D-4F31-A6C1-606F2B5EE2A1'
+        sim.name.should == 'iPhone 5'
         sim.os_name.should == :ios
-        sim.os_version.should == Gem::Version.new('9.2')
+        sim.os_version.should == Gem::Version.new('10.0')
       end
 
       it 'can construct the destination argument for a specific simulator' do
-        destination = @ctrl.destination('iPhone 4s')
+        destination = @ctrl.destination('iPhone 5')
 
-        destination.should == ['-destination', 'id=C0404A23-2D2D-4208-8CEC-774194D06759']
+        destination.should == ['-destination', 'id=872DB32B-E22D-4F31-A6C1-606F2B5EE2A1']
       end
 
       it 'can optionally specify a constraint on destinations' do
-        destination = @ctrl.destination('iPhone 4s', :ios, '8.0')
+        destination = @ctrl.destination('iPhone 4s', :ios, '9.3')
 
-        destination.should == ['-destination', 'id=C0404A23-2D2D-4208-8CEC-774194D06759']
+        destination.should == ['-destination', 'id=52DBE1DA-E90D-43E0-879D-B6D28B1682E8']
       end
 
       it 'throws if a destination cannot satisfy the OS constraint' do
-        expect { @ctrl.destination('iPhone 4s', :ios, '10.0') }.to raise_error(RuntimeError)
+        expect { @ctrl.destination('iPhone 4', :ios, '10.0') }.to raise_error(RuntimeError)
       end
 
       it 'still throws a helpful error if `:oldest` is used' do
@@ -64,35 +43,58 @@ EOF
 
       it 'throws if Xcode is not installed' do
         ENV['DEVELOPER_DIR'] = '/yolo'
-        expect { SimControl.new.destination('iPhone 4s', '9.0') }.to \
+        expect { SimControl.new.destination('iPhone 5', '9.0') }.to \
           raise_error(Fourflusher::Informative)
+      end
+      it 'throws if the device list is not Hash' do
+        ctrl = SimControl.new
+        ctrl.stub(:list).and_return(JSON.dump('devices' => []))
+        expect { ctrl.usable_simulators }.to \
+          raise_error(Fourflusher::Informative)
+      end
+    end
+
+    describe 'Unavailable simulators' do
+      before do
+        @ctrl = SimControl.new
+        @ctrl.stub(:list).and_return(File.new('spec/fixtures/simctl_with_unavailable.json').read)
+      end
+
+      it 'ignores unavailable simulators' do
+        sims = @ctrl.usable_simulators
+        sims.count.should == 14
+        # This response only has iOS 10 sims available
+        os_versions = sims.map(&:os_version).uniq
+        os_versions.count.should == 1
+        os_versions.first.should == Gem::Version.new('10.0')
       end
     end
   end
 
   describe Simulator do
     describe 'In general' do
-      it 'can parse a line of simctl output' do
-        line = SIMCTL_OUTPUT.lines[1]
-        sim = Simulator.match(line, 'iOS', '8.0').first
-
-        sim.id.should == 'C0404A23-2D2D-4208-8CEC-774194D06759'
-        sim.name.should == 'iPhone 4s'
-        sim.os_name.should == :ios
-        sim.os_version.should == Gem::Version.new('8.0')
+      before do
+        @ctrl = SimControl.new
+        @ctrl.stub(:list).and_return(File.new('spec/fixtures/simctl.json').read)
       end
 
-      it 'returns an empty list on invalid input' do
-        sim = Simulator.match('¯\_(ツ)_/¯', 'iOS', '8.0')
+      it 'can parse simctl output' do
+        sim = @ctrl.usable_simulators.first
 
-        sim.should == []
+        sim.id.should == '872DB32B-E22D-4F31-A6C1-606F2B5EE2A1'
+        sim.name.should == 'iPhone 5'
+        sim.os_name.should == :ios
+        sim.os_version.should == Gem::Version.new('10.0')
       end
 
       it 'has a meaningful string conversion' do
-        line = SIMCTL_OUTPUT.lines[1]
-        sim = Simulator.match(line, 'iOS', '8.0')
+        device_json = { 'state' => 'Shutdown',
+                        'availability' => '(available)',
+                        'name' => 'iPhone 5',
+                        'udid' => 'B7D21008-CC16-47D6-A9A9-885FE1FC47A8' }
+        sim = Simulator.new(device_json, 'iOS', '10.0')
 
-        sim.first.to_s.should == 'iPhone 4s (C0404A23-2D2D-4208-8CEC-774194D06759) - iOS 8.0'
+        sim.to_s.should == 'iPhone 5 (B7D21008-CC16-47D6-A9A9-885FE1FC47A8) - iOS 10.0'
       end
     end
   end
