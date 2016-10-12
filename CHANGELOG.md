@@ -7,7 +7,9 @@
 
 ##### Bug Fixes
 
-* None.  
+* Fixed simulators comparasion case, when device model is undefined
+  [Roman Truba](https://github.com/dreddik)
+  [#9](https://github.com/CocoaPods/fourflusher/pull/9)
 
 
 ## v2.0.0 (2016-10-02)
