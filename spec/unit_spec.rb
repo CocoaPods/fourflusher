@@ -8,7 +8,7 @@ module Fourflusher
 
       it 'can find all usable simulators' do
         sims = @ctrl.usable_simulators
-        sims.count.should == 107
+        sims.count.should == 108
       end
 
       it 'can find a specific simulator' do
@@ -62,7 +62,7 @@ module Fourflusher
 
       it 'ignores unavailable simulators' do
         sims = @ctrl.usable_simulators
-        sims.count.should == 14
+        sims.count.should == 15
         # This response only has iOS 10 sims available
         os_versions = sims.map(&:os_version).uniq
         os_versions.count.should == 1
