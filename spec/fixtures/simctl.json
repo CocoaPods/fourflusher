@@ -134,6 +134,12 @@
         "availability" : "(available)",
         "name" : "iPad Pro (12.9 inch)",
         "udid" : "5F8F269D-E643-4E87-915D-12B7D49ED08D"
+      },
+      {
+        "state" : "Shutdown",
+        "availability" : "(available)",
+        "name" : "iPad",
+        "udid" : "18B5770F-3C49-480E-BEC9-A6748612EBD3"
       }
     ],
     "watchOS 2.2" : [
