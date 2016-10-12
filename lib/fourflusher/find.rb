@@ -36,7 +36,11 @@ module Fourflusher
         return 1 if device2 == 'iPhone'
         return device1 <=> device2
       end
-      model1 <=> model2
+      
+      unless model1.nil? || model2.nil?
+        return model1 <=> model2
+      end
+      model2.nil? ? 1 : -1
     end
 
     # Returns the [device, model] for use during sorting
