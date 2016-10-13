@@ -31,12 +31,16 @@ module Fourflusher
       return other.os_version <=> os_version unless os_version == other.os_version
       device1, model1 = device_and_model
       device2, model2 = other.device_and_model
-      unless device1 == device2
-        return -1 if device1 == 'iPhone'
-        return 1 if device2 == 'iPhone'
-        return device1 <=> device2
-      end
-      model1 <=> model2
+      return device_compare(device1, device2) unless device1 == device2
+      return model1 <=> model2 unless model1.nil? || model2.nil?
+      model2.nil? ? 1 : -1
+    end
+
+    def device_compare(my_device, other_device)
+      return -1 if my_device == 'iPhone'
+      return 1 if other_device == 'iPhone'
+      return my_device <=> other_device unless my_device.nil? || other_device.nil?
+      other_device.nil? ? 1 : -1
     end
 
     # Returns the [device, model] for use during sorting

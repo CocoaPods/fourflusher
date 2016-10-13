@@ -20,6 +20,7 @@ module Fourflusher
           'ios 10.0 - iPhone 7',
           'ios 10.0 - iPhone 7 Plus',
           'ios 10.0 - iPhone SE',
+          'ios 10.0 - iPad',
           'ios 10.0 - iPad Air',
           'ios 10.0 - iPad Air 2',
           'ios 10.0 - iPad Pro (12.9 inch)',
