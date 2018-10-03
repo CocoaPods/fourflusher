@@ -65,4 +65,12 @@ describe Fourflusher::SimControl do
       expect(sim.name).to eq 'Apple Watch - 38mm'
     end
   end
+
+  describe 'finding simulators with the Xcode 10.1 format' do
+    it 'can find simulators using the Xcode 10.1 format' do
+      simctl.stub(:list).and_return(File.new('spec/fixtures/simctl_xcode_10.1.json').read)
+      sim = simctl.simulator('iPhone X')
+      expect(sim.name).to eq 'iPhone X'
+    end
+  end
 end
