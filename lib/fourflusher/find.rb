@@ -131,7 +131,7 @@ module Fourflusher
         # Sample string: iOS 9.3
         os_name, os_version = runtime_str.split ' '
         devices.map do |device|
-          Simulator.new(device, os_name, os_version) if device['availability'] == '(available)'
+          Simulator.new(device, os_name, os_version) if device['availability'] == '(available)' || device['isAvailable'] == 'YES'
         end
       end.compact.sort(&:sim_list_compare)
     end
