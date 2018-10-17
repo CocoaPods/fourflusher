@@ -3,13 +3,18 @@ require 'fourflusher'
 describe Fourflusher::SimControl do
   let(:simctl) { Fourflusher::SimControl.new }
 
+  let(:simctl_json_file) { 'spec/fixtures/simctl.json' }
+  before do
+    simctl.stub(:list).and_return(File.read(simctl_json_file))
+  end
+
   describe 'finding simulators' do
     it 'can list all usable simulators' do
       sims = simctl.usable_simulators
       os_names = sims.map(&:os_name).uniq.sort
 
       # This check is silly, but I am too lazy to come up with sth better
-      expect(sims.count).to eq ENV['TRAVIS'] == 'true' ? 107 : 36
+      expect(sims.count).to eq 108 # from the fixture
       expect(sims.first.name).to eq 'iPhone 5'
       expect(sims.first.os_name).to eq :ios
       expect(sims.last.name).to eq 'Apple Watch - 42mm'
@@ -67,8 +72,9 @@ describe Fourflusher::SimControl do
   end
 
   describe 'finding simulators with the Xcode 10.1 format' do
+    let(:simctl_json_file) { 'spec/fixtures/simctl_xcode_10.1.json' }
+
     it 'can find simulators using the Xcode 10.1 format' do
-      simctl.stub(:list).and_return(File.new('spec/fixtures/simctl_xcode_10.1.json').read)
       sim = simctl.simulator('iPhone X')
       expect(sim.name).to eq 'iPhone X'
     end
