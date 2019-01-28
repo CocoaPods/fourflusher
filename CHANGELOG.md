@@ -3,7 +3,9 @@
 
 ##### Enhancements
 
-* None.  
+* Update simctl interface for Xcode 10.2.  
+  [Jeff Kelley](https://github.com/SlaunchaMan)
+  [CocoaPods#8458](https://github.com/CocoaPods/CocoaPods/issues/8458)
 
 ##### Bug Fixes
 
