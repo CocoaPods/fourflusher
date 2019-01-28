@@ -128,8 +128,17 @@ module Fourflusher
         fail Fourflusher::Informative, msg
       end
       device_list.flat_map do |runtime_str, devices|
-        # Sample string: iOS 9.3
-        os_name, os_version = runtime_str.split ' '
+        # This format changed with Xcode 10.2.
+        if runtime_str.start_with?('com.apple.CoreSimulator.SimRuntime.')
+          # Sample string: com.apple.CoreSimulator.SimRuntime.iOS-12-2
+          _unused, os_info = runtime_str.split 'com.apple.CoreSimulator.SimRuntime.'
+          os_name, os_major_version, os_minor_version = os_info.split '-'
+          os_version = "#{os_major_version}.#{os_minor_version}"
+        else
+          # Sample string: iOS 9.3
+          os_name, os_version = runtime_str.split ' '
+        end
+
         devices.map do |device|
           if device['availability'] == '(available)' || device['isAvailable'] == 'YES'
             Simulator.new(device, os_name, os_version)
