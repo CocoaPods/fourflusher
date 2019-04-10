@@ -162,15 +162,18 @@ module Fourflusher
     def self.popen3(bin, command, stdout, stderr)
       require 'open3'
       Open3.popen3(bin, *command) do |i, o, e, t|
-        reader(o, stdout)
-        reader(e, stderr)
+        stdout_thread = reader(o, stdout)
+        stderr_thread = reader(e, stderr)
         i.close
 
         status = t.value
 
         o.flush
         e.flush
-        sleep(0.01)
+
+        # wait for both threads to process the streams
+        stdout_thread.join
+        stderr_thread.join
 
         status
       end
