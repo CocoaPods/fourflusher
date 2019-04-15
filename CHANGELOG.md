@@ -7,7 +7,9 @@
 
 ##### Bug Fixes
 
-* Fixed crash with very long devices list/slow computers. [Martin Fiebig](https://github.com/mfiebig) [#17](https://github.com/CocoaPods/fourflusher/issues/17)
+* Fixed crash with very long devices list/slow computers.  
+  [Martin Fiebig](https://github.com/mfiebig)
+  [#17](https://github.com/CocoaPods/fourflusher/issues/17)
 
 
 ## 2.2.0 (2019-01-28)
