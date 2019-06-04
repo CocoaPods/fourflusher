@@ -140,7 +140,7 @@ module Fourflusher
         end
 
         devices.map do |device|
-          if device['availability'] == '(available)' || device['isAvailable'] == 'YES'
+          if device['availability'] == '(available)' || device['isAvailable'] == 'YES' || device['isAvailable'] == true
             Simulator.new(device, os_name, os_version)
           end
         end
