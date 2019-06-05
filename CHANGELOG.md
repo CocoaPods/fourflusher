@@ -3,7 +3,9 @@
 
 ##### Enhancements
 
-* None.  
+* Update simctl interface for Xcode 11.  
+  [Colin Humber](https://github.com/colinhumber)
+  [#22](https://github.com/CocoaPods/fourflusher/pull/22)
 
 ##### Bug Fixes
 
