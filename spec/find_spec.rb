@@ -88,4 +88,13 @@ describe Fourflusher::SimControl do
       expect(sim.name).to eq 'iPhone X'
     end
   end
+
+  describe 'finding simulators with the Xcode 11.0 format' do
+    let(:simctl_json_file) { 'spec/fixtures/simctl_xcode_11.0.json' }
+
+    it 'can find simulators using the Xcode 11.0 format' do
+      sim = simctl.simulator('iPhone X')
+      expect(sim.name).to eq 'iPhone X'
+    end
+  end
 end
