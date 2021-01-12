@@ -93,6 +93,13 @@ module Fourflusher
 
   # Executes `simctl` commands
   class SimControl
+    LINES_TO_REMOVE = [
+      'Install Started',
+      'Install Succeeded',
+      'Install Failed',
+      'apply_selection_policy_once: prefer use of removable GPUs'
+    ].freeze
+
     def simulator(filter, os_name = :ios, minimum_version = '1.0')
       usable_simulators(filter, os_name, minimum_version).first
     end
@@ -122,7 +129,11 @@ module Fourflusher
 
     # Gets the simulators and transforms the simctl json into Simulator objects
     def fetch_sims
-      device_list = JSON.parse(list(['-j', 'devices']))['devices']
+      raw_list = list(['-j', 'devices'])
+      regex_union = Regexp.union(LINES_TO_REMOVE)
+      filtered_raw_list = raw_list.each_line.reject { |l| l =~ regex_union }.join
+
+      device_list = JSON.parse(filtered_raw_list)['devices']
       unless device_list.is_a?(Hash)
         msg = "Expected devices to be of type Hash but instated found #{device_list.class}"
         fail Fourflusher::Informative, msg
