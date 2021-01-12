@@ -7,7 +7,9 @@
 
 ##### Bug Fixes
 
-* None.  
+* Fix handling of extraneous output in simctl list.  
+  [Dimitris Koutsogiorgas](https://github.com/dnkoutso)
+  [#27](https://github.com/CocoaPods/fourflusher/pull/27) 
 
 
 ## 2.3.1 (2019-06-18)

@@ -97,4 +97,13 @@ describe Fourflusher::SimControl do
       expect(sim.name).to eq 'iPhone X'
     end
   end
+
+  describe 'finding simulators with extraneous bad output' do
+    let(:simctl_json_file) { 'spec/fixtures/simctl_bad.json' }
+
+    it 'can find a specific simulator' do
+      sim = simctl.simulator('iPhone 4s')
+      expect(sim.name).to eq 'iPhone 4s'
+    end
+  end
 end
