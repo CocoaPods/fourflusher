@@ -14,7 +14,7 @@ GEM
       ast (~> 2.2)
     powerpack (0.1.1)
     rainbow (2.1.0)
-    rake (10.5.0)
+    rake (13.0.6)
     rspec (2.99.0)
       rspec-core (~> 2.99.0)
       rspec-expectations (~> 2.99.0)
@@ -39,7 +39,7 @@ PLATFORMS
 DEPENDENCIES
   bundler (~> 1.11)
   fourflusher!
-  rake (~> 10.0)
+  rake (~> 13.0)
   rspec (~> 2)
   rubocop (~> 0.35.0)
 
