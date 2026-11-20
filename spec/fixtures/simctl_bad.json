@@ -1,6 +1,8 @@
 Install Started
 1%.........20.........40.........60........Install Succeeded
 apply_selection_policy_once: prefer use of removable GPUs
+objc[76557]: Class NSBloopilyBloop is implemented in both /usr/lib/libbloop.dylib (0x1f700e040) and /Library/Apple/System/Library/PrivateFrameworks/CoreBloop.framework/Versions/A/CoreBloop (0x106584688). One of the two will be used. Which one is undefined.
+xcodebuild[46005:809941] Requested but did not find extension point with identifier Xcode.IDEKit.ExtensionPointIdentifierToBundleIdentifier for extension Xcode.DebuggerFoundation.AppExtensionToBundleIdentifierMap.watchOS of plug-in com.apple.dt.IDEWatchSupportCore
 {
   "devices" : {
     "iOS 8.1" : [
