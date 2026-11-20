@@ -129,7 +129,7 @@ module Fourflusher
 
     # Gets the simulators and transforms the simctl json into Simulator objects
     def fetch_sims
-      raw_list = list(['-j', 'devices'])
+      raw_list = list(['-j', 'devices', '2>/dev/null'])
       regex_union = Regexp.union(LINES_TO_REMOVE)
       filtered_raw_list = raw_list.each_line.reject { |l| l =~ regex_union }.join
 
